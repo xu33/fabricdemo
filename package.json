@@ -3,7 +3,7 @@
   "private": true,
   "createByTafnsGenerator": "0.4.0",
   "scripts": {
-    "dev": "cross-env BABEL_ENV=client NODE_ENV=development webpack-dev-server --content-base build/"
+    "dev": "BABEL_ENV=client NODE_ENV=development webpack-dev-server --content-base build/"
   },
   "dependencies": {
     "@babel/core": "^7.1.6",
@@ -24,6 +24,7 @@
     "es6-object-assign": "^1.1.0",
     "es6-promise": "^4.2.5",
     "file-loader": "^2.0.0",
+    "jquery": "^3.4.1",
     "mini-css-extract-plugin": "^0.4.5",
     "optimize-css-assets-webpack-plugin": "^5.0.0",
     "prop-types": "^15.5.10",

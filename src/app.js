@@ -60,85 +60,36 @@
 // //   }
 // // });
 
-var canvas = new fabric.Canvas('c');
-canvas.observe('mouse:down', function(e) {
-  mousedown(e);
+import $ from "jquery";
+import Rect from "./rect";
+
+var canvas = new fabric.Canvas("c");
+var currentDrawingObject = null;
+window.canvas = canvas;
+
+$("#rect").on("click", function(e) {
+  Rect.init();
+
+  // if (currentDrawingObject) {
+  //   currentDrawingObject.clear();
+  // }
+
+  currentDrawingObject = Rect;
 });
-canvas.observe('mouse:move', function(e) {
-  mousemove(e);
-});
-canvas.observe('mouse:up', function(e) {
-  mouseup(e);
+
+$("#zoom").on("click", function(e) {
+  canvas.setZoom(canvas.getZoom() * 1.1);
 });
 
-var started = false;
-var x = 0;
-var y = 0;
-var drawing = true;
+// var rect = new fabric.Rect({
+//   width: 200,
+//   height: 200,
+//   left: 100,
+//   top: 100,
+//   fill: "rgba(0,0,0,0)",
+//   strokeWidth: 1,
+//   stroke: "#000000"
+// });
 
-/* Mousedown */
-function mousedown(e) {
-  if (!drawing) {
-    return;
-  }
-  console.log(e);
-  var mouse = canvas.getPointer(e.e);
-  started = true;
-  x = mouse.x;
-  y = mouse.y;
-
-  var square = new fabric.Rect({
-    width: 0,
-    height: 0,
-    left: x,
-    top: y,
-    fill: 'rgba(0,0,0,0)',
-    strokeWidth: 1,
-    stroke: '#000000'
-  });
-
-  canvas.add(square);
-  canvas.renderAll();
-  canvas.setActiveObject(square);
-}
-
-/* Mousemove */
-function mousemove(e) {
-  if (!drawing) {
-    return;
-  }
-
-  if (!started) {
-    return false;
-  }
-
-  var mouse = canvas.getPointer(e.e);
-
-  var w = Math.abs(mouse.x - x),
-    h = Math.abs(mouse.y - y);
-
-  if (!w || !h) {
-    return false;
-  }
-
-  var square = canvas.getActiveObject();
-  square.set('width', w).set('height', h);
-  canvas.renderAll();
-}
-
-/* Mouseup */
-function mouseup(e) {
-  if (!drawing) {
-    return;
-  }
-
-  if (started) {
-    started = false;
-  }
-
-  drawing = false;
-  var square = canvas.getActiveObject();
-
-  canvas.add(square);
-  canvas.renderAll();
-}
+// canvas.add(rect);
+// canvas.renderAll();
