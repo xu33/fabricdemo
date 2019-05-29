@@ -23,11 +23,10 @@
 // });
 
 import $ from 'jquery';
-import Rect from './rect';
-import Image from './image';
-var canvas = new fabric.Canvas('c', { preserveObjectStacking: true });
-
-window.canvas = canvas;
+import Polygon from './Polygon';
+import Rect from './Rect';
+import Image from './Image';
+import { canvas } from './State';
 
 Image.init().then(() => {
   // var rect = new fabric.Rect({
@@ -43,13 +42,29 @@ Image.init().then(() => {
   // canvas.add(rect);
   // canvas.renderAll();
 
-  // 绘制矩形
+  // 矩形
   $('#rect').on('click', function(e) {
     Rect.init({
       onStart: function() {
+        console.log('onstart fired');
         Image.lock();
       },
       onEnd: function() {
+        console.log('onend fired');
+        Image.unlock();
+      }
+    });
+  });
+
+  // 多边形
+  $('#poly').on('click', function(e) {
+    Polygon.init({
+      onStart: function() {
+        console.log('onstart fired');
+        Image.lock();
+      },
+      onEnd: function() {
+        console.log('onend fired');
         Image.unlock();
       }
     });
@@ -86,45 +101,52 @@ Image.init().then(() => {
 //   rect.set('selectable', true);
 // }, 2000);
 
-// 边界限制
-canvas.on('object:moving', function(e) {
-  var obj = e.target;
-  if (obj.type === 'image') {
-    return;
+var limitImage = function(o) {
+  var target = o.target;
+
+  if (target.top > 0) {
+    target.top = 0;
   }
-  // if object is too big ignore
-  if (
-    obj.currentHeight > obj.canvas.height ||
-    obj.currentWidth > obj.canvas.width
-  ) {
-    return;
+
+  if (target.left > 0) {
+    target.left = 0;
   }
+};
+
+var limitShapes = function(o) {
+  var obj = o.target;
+  // 对象过大
+  // if (
+  //   obj.currentHeight > obj.canvas.height ||
+  //   obj.currentWidth > obj.canvas.width
+  // ) {
+  //   return;
+  // }
   // 调用此方法让控件位置重新计算
   obj.setCoords();
-  // top-left  corner
-  if (obj.getBoundingRect().top < 0 || obj.getBoundingRect().left < 0) {
-    obj.top = Math.max(obj.top, obj.top - obj.getBoundingRect().top);
-    obj.left = Math.max(obj.left, obj.left - obj.getBoundingRect().left);
+
+  var { top, left, width, height } = obj.getBoundingRect();
+
+  // 左上角
+  if (top < 0 || left < 0) {
+    obj.top = Math.max(obj.top, obj.top - top);
+    obj.left = Math.max(obj.left, obj.left - left);
   }
-  // bot-right corner
-  if (
-    obj.getBoundingRect().top + obj.getBoundingRect().height >
-      obj.canvas.height ||
-    obj.getBoundingRect().left + obj.getBoundingRect().width > obj.canvas.width
-  ) {
-    obj.top = Math.min(
-      obj.top,
-      obj.canvas.height -
-        obj.getBoundingRect().height +
-        obj.top -
-        obj.getBoundingRect().top
-    );
-    obj.left = Math.min(
-      obj.left,
-      obj.canvas.width -
-        obj.getBoundingRect().width +
-        obj.left -
-        obj.getBoundingRect().left
-    );
+
+  // 右下角
+  if (top + height > obj.canvas.height || left + width > obj.canvas.width) {
+    obj.top = Math.min(obj.top, obj.canvas.height - height + obj.top - top);
+    obj.left = Math.min(obj.left, obj.canvas.width - width + obj.left - left);
+  }
+};
+
+// 边界判断
+canvas.on('object:moving', function(e) {
+  console.log('object moving fired');
+  var obj = e.target;
+  if (obj.type === 'image') {
+    limitImage(e);
+  } else {
+    limitShapes(e);
   }
 });

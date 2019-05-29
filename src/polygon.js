@@ -1,79 +1,39 @@
+import { drawingObject } from './State';
+import { canvas } from './State';
+
 var roof = null;
 var roofPoints = [];
 var lines = [];
 var lineCounter = 0;
-var drawingObject = {};
-drawingObject.type = "";
-drawingObject.background = "";
-drawingObject.border = "";
-
-function Point(x, y) {
-  this.x = x;
-  this.y = y;
-}
-
-$("#poly").click(function() {
-  if (drawingObject.type == "roof") {
-    drawingObject.type = "";
-    lines.forEach(function(value, index, ar) {
-      canvas.remove(value);
-    });
-    //canvas.remove(lines[lineCounter - 1]);
-    roof = makeRoof(roofPoints);
-    canvas.add(roof);
-    canvas.renderAll();
-  } else {
-    drawingObject.type = "roof"; // roof type
-  }
-});
-
-// canvas Drawing
-var canvas = new fabric.Canvas("canvas-tools");
 var x = 0;
 var y = 0;
 
-fabric.util.addListener(window, "dblclick", function() {
-  drawingObject.type = "";
-  lines.forEach(function(value, index, ar) {
-    canvas.remove(value);
-  });
-  //canvas.remove(lines[lineCounter - 1]);
-  roof = makeRoof(roofPoints);
-  canvas.add(roof);
-  canvas.renderAll();
-
-  console.log("double click");
-  //clear arrays
-  roofPoints = [];
-  lines = [];
-  lineCounter = 0;
-});
-
-canvas.on("mouse:down", function(options) {
-  if (drawingObject.type == "roof") {
+var handleMousedown = function(options) {
+  if (drawingObject.type == 'roof') {
     canvas.selection = false;
-    setStartingPoint(options); // set x,y
-    roofPoints.push(new Point(x, y));
+
+    setStartingPoint(options);
+
+    roofPoints.push({ x, y });
     var points = [x, y, x, y];
     lines.push(
       new fabric.Line(points, {
-        strokeWidth: 3,
+        strokeWidth: 1,
         selectable: false,
-        stroke: "red"
+        stroke: '#FFF',
+        strokeUniform: true
       })
-        .setOriginX(x)
-        .setOriginY(y)
     );
     canvas.add(lines[lineCounter]);
     lineCounter++;
-    canvas.on("mouse:up", function(options) {
-      canvas.selection = true;
-    });
   }
-});
-canvas.on("mouse:move", function(options) {
+};
+
+var handleMousemove = function(options) {
   if (
-    lines[0] !== null && lines[0] !== undefined && drawingObject.type == "roof"
+    lines[0] !== null &&
+    lines[0] !== undefined &&
+    drawingObject.type == 'roof'
   ) {
     setStartingPoint(options);
     lines[lineCounter - 1].set({
@@ -82,21 +42,26 @@ canvas.on("mouse:move", function(options) {
     });
     canvas.renderAll();
   }
-});
+};
 
-function setStartingPoint(options) {
-  var offset = $("#canvas-tools").offset();
-  x = options.e.pageX - offset.left;
-  y = options.e.pageY - offset.top;
-}
+var handleMouseup = function() {
+  canvas.selection = true;
+};
 
-function makeRoof(roofPoints) {
+var setStartingPoint = function(o) {
+  var mouse = canvas.getPointer(o.e);
+  x = mouse.x;
+  y = mouse.y;
+};
+
+var makeRoof = function(roofPoints) {
   var left = findLeftPaddingForRoof(roofPoints);
   var top = findTopPaddingForRoof(roofPoints);
-  roofPoints.push(new Point(roofPoints[0].x, roofPoints[0].y));
+  roofPoints.push({ x: roofPoints[0].x, y: roofPoints[0].y });
   var roof = new fabric.Polyline(roofPoints, {
-    fill: "rgba(0,0,0,0)",
-    stroke: "#58c"
+    fill: 'rgba(0,0,0,0)',
+    stroke: '#fff',
+    strokeUniform: true
   });
   roof.set({
     left: left,
@@ -104,24 +69,67 @@ function makeRoof(roofPoints) {
   });
 
   return roof;
-}
+};
 
-function findTopPaddingForRoof(roofPoints) {
-  var result = 999999;
+var findTopPaddingForRoof = function(roofPoints) {
+  var result = Infinity;
   for (var f = 0; f < lineCounter; f++) {
     if (roofPoints[f].y < result) {
       result = roofPoints[f].y;
     }
   }
   return Math.abs(result);
-}
+};
 
-function findLeftPaddingForRoof(roofPoints) {
-  var result = 999999;
+var findLeftPaddingForRoof = function(roofPoints) {
+  var result = Infinity;
   for (var i = 0; i < lineCounter; i++) {
     if (roofPoints[i].x < result) {
       result = roofPoints[i].x;
     }
   }
   return Math.abs(result);
-}
+};
+
+var handleDoubleClick = function(e) {
+  lines.forEach(function(value, index, ar) {
+    canvas.remove(value);
+  });
+  roof = makeRoof(roofPoints);
+  canvas.add(roof);
+  canvas.renderAll();
+
+  Polygon.clear();
+};
+
+var noop = function() {};
+
+var Polygon = {
+  init: function({ onStart, onEnd }) {
+    this.onStart = onStart || noop;
+    this.onEnd = onEnd || noop;
+
+    drawingObject.type = 'roof';
+
+    canvas.on('mouse:down', handleMousedown);
+    canvas.on('mouse:move', handleMousemove);
+    canvas.on('mouse:up', handleMouseup);
+
+    window.addEventListener('dblclick', handleDoubleClick);
+  },
+  clear: function() {
+    canvas.off('mouse:down', handleMousedown);
+    canvas.off('mouse:move', handleMousemove);
+    canvas.off('mouse:up', handleMouseup);
+    window.removeEventListener('dblclick', handleDoubleClick);
+
+    // 重置
+    drawingObject.type = '';
+    roof = null;
+    roofPoints = [];
+    lines = [];
+    lineCounter = 0;
+  }
+};
+
+export default Polygon;

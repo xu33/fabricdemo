@@ -1,5 +1,7 @@
 var drawingObject = {
-  type: ""
+  type: ''
 };
 
-export { drawingObject };
+var canvas = new fabric.Canvas('c', { preserveObjectStacking: true });
+
+export { drawingObject, canvas };

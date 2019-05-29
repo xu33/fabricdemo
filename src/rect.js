@@ -1,110 +1,98 @@
-import { drawingObject } from './state';
+import { drawingObject } from './State';
+import { canvas } from './State';
 
-var started = false;
+var rect = null;
+var drawStarted = false;
 var x = 0;
 var y = 0;
 
-/* Mousedown */
-function mousedown(e) {
-  console.log('mousedown fired');
+var handleMousedown = function(o) {
   if (drawingObject.type != 'rect') {
     return;
   }
-  var mouse = canvas.getPointer(e.e);
-  started = true;
+  drawStarted = true;
+
+  var mouse = canvas.getPointer(o.e);
   x = mouse.x;
   y = mouse.y;
-
-  var rect = new fabric.Rect({
+  rect = new fabric.Rect({
     width: 0,
     height: 0,
     left: x,
     top: y,
     fill: 'rgba(0,0,0,0)',
     strokeWidth: 1,
+    strokeUniform: true,
     stroke: '#FFF'
   });
 
   canvas.add(rect);
-  canvas.renderAll();
-  canvas.setActiveObject(rect);
+};
 
-  console.log(canvas.getObjects().length);
-}
-
-/* Mousemove */
-function mousemove(e) {
+var handleMousemove = function(o) {
   if (drawingObject.type != 'rect') {
     return;
   }
 
-  if (!started) {
+  if (!drawStarted) {
     return false;
   }
 
-  var mouse = canvas.getPointer(e.e);
+  var mouse = canvas.getPointer(o.e);
 
-  var w = Math.abs(mouse.x - x);
-  var h = Math.abs(mouse.y - y);
-
-  if (!w || !h) {
-    return false;
+  if (x > mouse.x) {
+    rect.set({ left: Math.abs(mouse.x) });
+  }
+  if (y > mouse.y) {
+    rect.set({ top: Math.abs(mouse.y) });
   }
 
-  var square = canvas.getActiveObject();
-  square.set('width', w).set('height', h);
+  var w = Math.abs(x - mouse.x);
+  var h = Math.abs(y - mouse.y);
+
+  rect.set('width', w);
+  rect.set('height', h);
 
   canvas.renderAll();
 
   // console.log(canvas.getObjects().length);
-}
+};
 
-/* Mouseup */
-function mouseup(e) {
+var handleMouseup = function() {
   if (drawingObject.type != 'rect') {
     return;
   }
 
-  if (started) {
-    started = false;
+  if (drawStarted) {
+    drawStarted = false;
   }
 
-  // canvas.renderAll();
-
+  rect = null;
   Rect.clear();
-}
+};
 
 var Rect = {
   init: function({ onStart, onEnd }) {
     this.onStart = onStart || function() {};
     this.onEnd = onEnd || function() {};
-    drawingObject.type = 'rect';
-    // canvas.forEachObject(function(obj) {
-    //   obj.set('selectable', false);
-    // });
-    // canvas.selection = false;
 
-    canvas.on('mouse:down', mousedown);
-    canvas.on('mouse:move', mousemove);
-    canvas.on('mouse:up', mouseup);
+    drawingObject.type = 'rect';
+
+    canvas.on('mouse:down', handleMousedown);
+    canvas.on('mouse:move', handleMousemove);
+    canvas.on('mouse:up', handleMouseup);
 
     this.onStart();
   },
   clear: function() {
-    // console.log(canvas.off);
-    canvas.off('mouse:down', mousedown);
-    canvas.off('mouse:move', mousemove);
-    canvas.off('mouse:up', mouseup);
+    canvas.off('mouse:down', handleMousedown);
+    canvas.off('mouse:move', handleMousemove);
+    canvas.off('mouse:up', handleMouseup);
 
-    // canvas.selection = true;
+    // var rect = canvas.getActiveObject();
+    // rect.set('selectable', true);
 
-    // canvas.forEachObject(function(obj) {
-    //   // console.log('type:', obj.type);
-    //   obj.set('selectable', true);
-    // });
-
-    var rect = canvas.getActiveObject();
-    rect.set('selectable', true);
+    // 触发交互?
     canvas.setZoom(1);
 
     drawingObject.type = '';
