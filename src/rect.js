@@ -11,7 +11,6 @@ var handleMousedown = function(o) {
     return;
   }
   drawStarted = true;
-
   var mouse = canvas.getPointer(o.e);
   x = mouse.x;
   y = mouse.y;
@@ -67,7 +66,6 @@ var handleMouseup = function() {
     drawStarted = false;
   }
 
-  rect = null;
   Rect.clear();
 };
 
@@ -89,13 +87,17 @@ var Rect = {
     canvas.off('mouse:move', handleMousemove);
     canvas.off('mouse:up', handleMouseup);
 
-    // var rect = canvas.getActiveObject();
-    // rect.set('selectable', true);
+    // 触发交互
+    // canvas.setZoom(1);
 
-    // 触发交互?
-    canvas.setZoom(1);
+    rect.setCoords();
 
+    // 重置
+    rect = null;
     drawingObject.type = '';
+    drawStarted = false;
+    x = 0;
+    y = 0;
 
     this.onEnd();
   }

@@ -70,26 +70,42 @@ Image.init().then(() => {
     });
   });
 
-  // 放大
-  $('#zoom').on('click', function(e) {
+  var zoomOut = function(e) {
     // canvas.setZoom(canvas.getZoom() * 1.1);
     canvas.forEachObject(obj => {
       obj.set('scaleX', obj.get('scaleX') * 1.1);
       obj.set('scaleY', obj.get('scaleY') * 1.1);
+      obj.setCoords();
     });
 
     canvas.renderAll();
-  });
+  };
 
-  // 缩小
-  $('#zoomin').on('click', function(e) {
+  var zoomIn = function(e) {
     // canvas.setZoom(canvas.getZoom() * 1.1);
     canvas.forEachObject(obj => {
       obj.set('scaleX', obj.get('scaleX') / 1.1);
       obj.set('scaleY', obj.get('scaleY') / 1.1);
+      obj.setCoords();
     });
 
     canvas.renderAll();
+  };
+
+  // 放大
+  $('#zoom').on('click', function(e) {
+    zoomOut();
+  });
+
+  // 缩小
+  $('#zoomin').on('click', function(e) {
+    zoomIn();
+
+    var oImg = Image.getInstance();
+    var { width, height } = oImg.getBoundingRect();
+    if (width < canvas.width || height < canvas.height) {
+      zoomOut();
+    }
   });
 });
 
@@ -101,8 +117,7 @@ Image.init().then(() => {
 //   rect.set('selectable', true);
 // }, 2000);
 
-var limitImage = function(o) {
-  var target = o.target;
+var limitImage = function(target) {
   var left = target.get('left');
   var top = target.get('top');
   var canvasWidth = target.canvas.width;
@@ -116,8 +131,9 @@ var limitImage = function(o) {
   if (left > 0) {
     target.set('left', 0);
   }
-
+  // console.log(width, target.get('width'));
   if (width + left < canvasWidth && width > canvasWidth) {
+    // console.log('reset left fired');
     left = canvasWidth - width;
     target.set('left', left);
   }
@@ -128,8 +144,7 @@ var limitImage = function(o) {
   }
 };
 
-var limitShapes = function(o) {
-  var obj = o.target;
+var limitShapes = function(obj) {
   // 调用此方法让控件位置重新计算
   obj.setCoords();
 
@@ -160,8 +175,8 @@ canvas.on('object:moving', function(e) {
   // console.log('object moving fired');
   var obj = e.target;
   if (obj.type === 'image') {
-    limitImage(e);
+    limitImage(obj);
   } else {
-    limitShapes(e);
+    limitShapes(obj);
   }
 });

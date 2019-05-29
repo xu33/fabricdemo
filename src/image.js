@@ -55,6 +55,9 @@ var Image = {
   unlock() {
     imgInstance.lockMovementX = false;
     imgInstance.lockMovementY = false;
+  },
+  getInstance() {
+    return imgInstance;
   }
 };
 
