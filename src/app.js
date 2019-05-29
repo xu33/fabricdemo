@@ -103,46 +103,61 @@ Image.init().then(() => {
 
 var limitImage = function(o) {
   var target = o.target;
+  var left = target.get('left');
+  var top = target.get('top');
+  var canvasWidth = target.canvas.width;
+  var canvasHeight = target.canvas.height;
+  var { width, height } = target.getBoundingRect();
 
-  if (target.top > 0) {
-    target.top = 0;
+  if (top > 0) {
+    target.set('top', 0);
   }
 
-  if (target.left > 0) {
-    target.left = 0;
+  if (left > 0) {
+    target.set('left', 0);
+  }
+
+  if (width + left < canvasWidth && width > canvasWidth) {
+    left = canvasWidth - width;
+    target.set('left', left);
+  }
+
+  if (height + top < canvasHeight && height > canvasHeight) {
+    top = canvasHeight - height;
+    target.set('top', top);
   }
 };
 
 var limitShapes = function(o) {
   var obj = o.target;
-  // 对象过大
-  // if (
-  //   obj.currentHeight > obj.canvas.height ||
-  //   obj.currentWidth > obj.canvas.width
-  // ) {
-  //   return;
-  // }
   // 调用此方法让控件位置重新计算
   obj.setCoords();
 
   var { top, left, width, height } = obj.getBoundingRect();
+  var nextTop, nextLeft;
 
   // 左上角
   if (top < 0 || left < 0) {
-    obj.top = Math.max(obj.top, obj.top - top);
-    obj.left = Math.max(obj.left, obj.left - left);
+    nextTop = Math.max(obj.top, obj.top - top);
+    nextLeft = Math.max(obj.left, obj.left - left);
+
+    obj.set('top', nextTop);
+    obj.set('left', nextLeft);
   }
 
   // 右下角
   if (top + height > obj.canvas.height || left + width > obj.canvas.width) {
-    obj.top = Math.min(obj.top, obj.canvas.height - height + obj.top - top);
-    obj.left = Math.min(obj.left, obj.canvas.width - width + obj.left - left);
+    nextTop = Math.min(obj.top, obj.canvas.height - height + obj.top - top);
+    nextLeft = Math.min(obj.left, obj.canvas.width - width + obj.left - left);
+
+    obj.set('top', nextTop);
+    obj.set('left', nextLeft);
   }
 };
 
 // 边界判断
 canvas.on('object:moving', function(e) {
-  console.log('object moving fired');
+  // console.log('object moving fired');
   var obj = e.target;
   if (obj.type === 'image') {
     limitImage(e);

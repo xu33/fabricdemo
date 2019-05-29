@@ -116,6 +116,8 @@ var Polygon = {
     canvas.on('mouse:up', handleMouseup);
 
     window.addEventListener('dblclick', handleDoubleClick);
+
+    this.onStart();
   },
   clear: function() {
     canvas.off('mouse:down', handleMousedown);
@@ -129,6 +131,8 @@ var Polygon = {
     roofPoints = [];
     lines = [];
     lineCounter = 0;
+
+    this.onEnd();
   }
 };
 
