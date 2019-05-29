@@ -3,7 +3,7 @@
   "private": true,
   "createByTafnsGenerator": "0.4.0",
   "scripts": {
-    "dev": "BABEL_ENV=client NODE_ENV=development webpack-dev-server --content-base build/"
+    "dev": "cross-env BABEL_ENV=client NODE_ENV=development webpack-dev-server --content-base build/"
   },
   "dependencies": {
     "@babel/core": "^7.1.6",

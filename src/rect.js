@@ -1,4 +1,4 @@
-import { currentType } from "./state";
+import { drawingObject } from './state';
 
 var started = false;
 var x = 0;
@@ -6,7 +6,10 @@ var y = 0;
 
 /* Mousedown */
 function mousedown(e) {
-  console.log("mousedown fired");
+  console.log('mousedown fired');
+  if (drawingObject.type != 'rect') {
+    return;
+  }
   var mouse = canvas.getPointer(e.e);
   started = true;
   x = mouse.x;
@@ -17,9 +20,9 @@ function mousedown(e) {
     height: 0,
     left: x,
     top: y,
-    fill: "rgba(0,0,0,0)",
+    fill: 'rgba(0,0,0,0)',
     strokeWidth: 1,
-    stroke: "#000000"
+    stroke: '#FFF'
   });
 
   canvas.add(rect);
@@ -31,6 +34,10 @@ function mousedown(e) {
 
 /* Mousemove */
 function mousemove(e) {
+  if (drawingObject.type != 'rect') {
+    return;
+  }
+
   if (!started) {
     return false;
   }
@@ -45,7 +52,7 @@ function mousemove(e) {
   }
 
   var square = canvas.getActiveObject();
-  square.set("width", w).set("height", h);
+  square.set('width', w).set('height', h);
 
   canvas.renderAll();
 
@@ -54,43 +61,55 @@ function mousemove(e) {
 
 /* Mouseup */
 function mouseup(e) {
+  if (drawingObject.type != 'rect') {
+    return;
+  }
+
   if (started) {
     started = false;
   }
 
-  // var square = canvas.getActiveObject();
-
-  // canvas.add(square);
-  canvas.renderAll();
+  // canvas.renderAll();
 
   Rect.clear();
 }
 
 var Rect = {
-  init: function() {
-    canvas.getObjects().forEach(function(obj) {
-      obj.set("selectable", false);
-    });
-    canvas.selection = false;
+  init: function({ onStart, onEnd }) {
+    this.onStart = onStart || function() {};
+    this.onEnd = onEnd || function() {};
+    drawingObject.type = 'rect';
+    // canvas.forEachObject(function(obj) {
+    //   obj.set('selectable', false);
+    // });
+    // canvas.selection = false;
 
-    canvas.on("mouse:down", mousedown);
-    canvas.on("mouse:move", mousemove);
-    canvas.on("mouse:up", mouseup);
+    canvas.on('mouse:down', mousedown);
+    canvas.on('mouse:move', mousemove);
+    canvas.on('mouse:up', mouseup);
+
+    this.onStart();
   },
   clear: function() {
-    canvas.off("mouse:down", mousedown);
-    canvas.off("mouse:move", mousemove);
-    canvas.off("mouse:up", mouseup);
+    // console.log(canvas.off);
+    canvas.off('mouse:down', mousedown);
+    canvas.off('mouse:move', mousemove);
+    canvas.off('mouse:up', mouseup);
 
-    setTimeout(function() {
-      canvas.selection = true;
+    // canvas.selection = true;
 
-      canvas.getObjects().forEach(function(obj) {
-        obj.set("selectable", true);
-      });
+    // canvas.forEachObject(function(obj) {
+    //   // console.log('type:', obj.type);
+    //   obj.set('selectable', true);
+    // });
 
-      canvas.renderAll();
-    }, 100);
+    var rect = canvas.getActiveObject();
+    rect.set('selectable', true);
+    canvas.setZoom(1);
+
+    drawingObject.type = '';
+
+    this.onEnd();
   }
 };
 
