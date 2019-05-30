@@ -31,12 +31,16 @@ var limitImage = function(target) {
   var zoom = target.canvas.getZoom();
   var viewportMatrix = target.canvas.viewportTransform;
 
-  console.log(
-    boundingRect.left,
-    target.left,
-    target.get('left'),
-    target.get('scaleX')
-  );
+  console.log(target.getCoords()[0], target.get('left'));
+
+  var topLeft = target.getCoords()[0];
+  if (topLeft.x > 0) {
+    target.set('left', 0);
+  }
+
+  if (topLeft.y > 0) {
+    target.set('top', 0);
+  }
 
   // boundingRect.top = (boundingRect.top - viewportMatrix[5]) / zoom;
   // boundingRect.left = (boundingRect.left - viewportMatrix[4]) / zoom;
