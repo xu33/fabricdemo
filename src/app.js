@@ -71,14 +71,25 @@ Image.init().then(() => {
   });
 
   var zoomOut = function(e) {
-    // canvas.setZoom(canvas.getZoom() * 1.1);
+    var oImg = Image.getInstance();
+    console.log('width', oImg.get('width'));
+    canvas.setZoom(canvas.getZoom() * 1.1);
+    // canvas.forEachObject(obj => {
+    //   obj.set('scaleX', obj.get('scaleX') * 1.1);
+    //   obj.set('scaleY', obj.get('scaleY') * 1.1);
+    //   obj.setCoords();
+    // });
+
+    // canvas.renderAll();
+    // canvas.setCoords();
+
     canvas.forEachObject(obj => {
-      obj.set('scaleX', obj.get('scaleX') * 1.1);
-      obj.set('scaleY', obj.get('scaleY') * 1.1);
       obj.setCoords();
     });
 
-    canvas.renderAll();
+    setTimeout(function() {
+      console.log('width', oImg.get('width'));
+    }, 100);
   };
 
   var zoomIn = function(e) {
@@ -106,6 +117,38 @@ Image.init().then(() => {
     if (width < canvas.width || height < canvas.height) {
       zoomOut();
     }
+  });
+
+  // 删除选中
+  $('#del').on('click', function(e) {
+    var activeObj = canvas.getActiveObject();
+    if (activeObj.type !== 'image') {
+      canvas.remove(activeObj);
+    }
+  });
+
+  var onWheel = function(opt) {
+    if (!zoomEnable) {
+      return;
+    }
+    var delta = opt.e.deltaY;
+    var zoom = canvas.getZoom();
+    console.log('zoom:', zoom, delta);
+    zoom = zoom + delta / 2000;
+    if (zoom > 10) zoom = 10;
+    if (zoom < 0.1) zoom = 0.1;
+    canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+
+    console.log('vpt now:', canvas.viewportTransform);
+  };
+
+  canvas.on('mouse:wheel', onWheel);
+
+  var zoomEnable = false;
+  $('#zoominout').on('click', function(e) {
+    zoomEnable = !zoomEnable;
+
+    $('#zoominout').html(zoomEnable ? '取消' : '缩放');
   });
 });
 
@@ -171,12 +214,18 @@ var limitShapes = function(obj) {
 };
 
 // 边界判断
-canvas.on('object:moving', function(e) {
-  // console.log('object moving fired');
-  var obj = e.target;
-  if (obj.type === 'image') {
-    limitImage(obj);
-  } else {
-    limitShapes(obj);
-  }
+// canvas.on('object:moving', function(e) {
+//   // console.log('object moving fired');
+//   var obj = e.target;
+//   if (obj.type === 'image') {
+//     limitImage(obj);
+//   } else {
+//     limitShapes(obj);
+//   }
+
+//   console.log('vpt:', canvas.viewportTransform);
+// });
+
+canvas.on('object:modified', function(o) {
+  console.log('object:modified fired');
 });
