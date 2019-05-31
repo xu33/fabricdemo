@@ -2,55 +2,6 @@ import { canvas } from './State';
 import $ from 'jquery';
 import { triggerLimit } from './Boundary';
 
-// var zoomOut = function(e) {
-//   var oImg = Image.getInstance();
-//   console.log('width', oImg.get('width'));
-//   canvas.setZoom(canvas.getZoom() * 1.1);
-//   // canvas.forEachObject(obj => {
-//   //   obj.set('scaleX', obj.get('scaleX') * 1.1);
-//   //   obj.set('scaleY', obj.get('scaleY') * 1.1);
-//   //   obj.setCoords();
-//   // });
-
-//   // canvas.renderAll();
-//   // canvas.setCoords();
-
-//   canvas.forEachObject(obj => {
-//     obj.setCoords();
-//   });
-
-//   setTimeout(function() {
-//     console.log('width', oImg.get('width'));
-//   }, 100);
-// };
-
-// var zoomIn = function(e) {
-//   // canvas.setZoom(canvas.getZoom() * 1.1);
-//   canvas.forEachObject(obj => {
-//     obj.set('scaleX', obj.get('scaleX') / 1.1);
-//     obj.set('scaleY', obj.get('scaleY') / 1.1);
-//     obj.setCoords();
-//   });
-
-//   canvas.renderAll();
-// };
-
-// // 放大
-// $('#zoom').on('click', function(e) {
-//   zoomOut();
-// });
-
-// // 缩小
-// $('#zoomin').on('click', function(e) {
-//   zoomIn();
-
-//   var oImg = Image.getInstance();
-//   var { width, height } = oImg.getBoundingRect();
-//   if (width < canvas.width || height < canvas.height) {
-//     zoomOut();
-//   }
-// });
-
 var init = function() {
   var onWheel = function(opt) {
     opt.e.preventDefault();
@@ -72,7 +23,7 @@ var init = function() {
       }
     });
 
-    // console.log('vpt now:', canvas.viewportTransform);
+    console.log('vpt now:', canvas.viewportTransform);
   };
 
   canvas.on('mouse:wheel', onWheel);

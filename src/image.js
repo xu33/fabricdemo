@@ -14,7 +14,7 @@ var Image = {
         imgInstance = oImg;
         canvas.add(oImg);
 
-        console.log(oImg.calcOwnMatrix());
+        // console.log(oImg.calcOwnMatrix());
 
         res();
       });
