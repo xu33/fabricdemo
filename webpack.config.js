@@ -2,10 +2,10 @@ const webpack = require('webpack');
 const path = require('path');
 
 const devServer = {
-  host: 'localhost',
+  host: '192.168.6.1',
   port: '7070',
   compress: true,
-  publicPath: `http://localhost:7070/assets/`
+  publicPath: `http://192.168.6.1:7070/assets/`
 };
 
 module.exports = {

@@ -1,5 +1,6 @@
 import { canvas } from './State';
 import $ from 'jquery';
+import { triggerLimit } from './Boundary';
 
 // var zoomOut = function(e) {
 //   var oImg = Image.getInstance();
@@ -52,6 +53,8 @@ import $ from 'jquery';
 
 var init = function() {
   var onWheel = function(opt) {
+    opt.e.preventDefault();
+
     if (!zoomEnable) {
       return;
     }
@@ -62,6 +65,12 @@ var init = function() {
     if (zoom > 10) zoom = 10;
     if (zoom < 1) zoom = 1;
     canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+
+    canvas.forEachObject(function(obj) {
+      if (obj.type === 'image') {
+        triggerLimit(obj);
+      }
+    });
 
     // console.log('vpt now:', canvas.viewportTransform);
   };

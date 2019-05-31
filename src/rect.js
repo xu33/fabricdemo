@@ -25,6 +25,27 @@ var handleMousedown = function(o) {
     stroke: '#FFF'
   });
 
+  // console.log(x, y, rect.calcTransformMatrix());
+  // console.log(canvas.viewportTransform);
+
+  var om = rect.calcTransformMatrix();
+  var cm = canvas.viewportTransform;
+  var totalMatrix = fabric.util.multiplyTransformMatrices(cm, om);
+
+  console.log(x, y);
+  // rect.setCoords();
+  console.log(
+    '叠加矩阵',
+    totalMatrix,
+    rect.left,
+    rect.top,
+    rect.getBoundingRect()
+  );
+
+  // console.log('decoded:', fabric.util.qrDecompose(om));
+
+  // fabric.util.transformPoint()
+
   canvas.add(rect);
 };
 
