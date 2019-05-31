@@ -7,29 +7,27 @@ var limitImage = function(obj) {
   // 获取不受zoom影响的bound
   var abound = obj.getBoundingRect(true);
 
-  console.log(abound);
+  // console.log(abound);
 
   // 计算逆矩阵
-  const iMtx = fabric.util.invertTransform(canvas.viewportTransform);
+  const rmatrix = fabric.util.invertTransform(canvas.viewportTransform);
   // 通过逆矩阵计算zoom之前的坐标在当前的位置
-  var tl = fabric.util.transformPoint({ x: 0, y: 0 }, iMtx);
+  var tl = fabric.util.transformPoint({ x: 0, y: 0 }, rmatrix);
   var br = fabric.util.transformPoint(
     {
       x: canvas.width - bound.width,
       y: canvas.height - bound.height
     },
-    iMtx
+    rmatrix
   );
 
   if (bound.left > 0) {
     console.log('left exceed');
-
     obj.left = tl.x;
   }
 
   if (bound.top > 0) {
     console.log('top exceed');
-
     obj.top = tl.y;
   }
 
@@ -56,15 +54,15 @@ var limitShape = function(obj) {
   var abound = obj.getBoundingRect(true);
 
   // 计算逆矩阵
-  const iMtx = fabric.util.invertTransform(canvas.viewportTransform);
+  const rmatrix = fabric.util.invertTransform(canvas.viewportTransform);
   // 通过逆矩阵计算zoom之前的坐标在当前的位置
-  var tl = fabric.util.transformPoint({ x: 0, y: 0 }, iMtx);
+  var tl = fabric.util.transformPoint({ x: 0, y: 0 }, rmatrix);
   var br = fabric.util.transformPoint(
     {
       x: canvas.width - bound.width,
       y: canvas.height - bound.height
     },
-    iMtx
+    rmatrix
   );
 
   if (bound.left < 0) {
