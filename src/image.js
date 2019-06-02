@@ -10,6 +10,7 @@ var Image = {
         oImg.lockScalingY = true;
         oImg.lockUniScaling = true;
         oImg.lockRotation = true;
+        oImg.hasRotatingPoint = false;
 
         imgInstance = oImg;
 

@@ -1,7 +1,5 @@
 import { drawingObject } from './State';
 import { canvas } from './State';
-import { transcode } from 'buffer';
-import { domainToASCII } from 'url';
 
 var counter = 0;
 var group = null;
