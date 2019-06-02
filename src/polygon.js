@@ -149,7 +149,7 @@ var Polygon = {
     canvas.off('mouse:up', handleMouseup);
     window.removeEventListener('dblclick', handleDoubleClick);
 
-    // 缩放变粗处理
+    // 缩放细框处理
     // 1.缓存缩放后的矩阵
     // 2.还原缩放系数到1
     // 3.根据缩放后的矩阵计算新的多边形顶点坐标
