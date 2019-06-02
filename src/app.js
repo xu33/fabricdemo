@@ -1,27 +1,3 @@
-// var canvas = new fabric.Canvas('c');
-// // create a rectangle object
-// var rect = new fabric.Rect({
-//   left: 100,
-//   top: 100,
-//   fill: 'rgba(0,0,0,0)',
-//   stroke: '#000',
-//   strokeWidth: 1,
-//   strokeUniform: true,
-//   width: 100,
-//   height: 100
-// });
-
-// // rect.set('selectable', false);
-
-// // "add" rectangle onto canvas
-// canvas.add(rect);
-
-// canvas.on('mouse:down', function(options) {
-//   if (options.target) {
-//     console.log(options.target == rect);
-//   }
-// });
-
 import $ from 'jquery';
 import { canvas } from './State';
 import Polygon from './Polygon';
@@ -33,6 +9,7 @@ import Boundary from './Boundary';
 Image.init().then(() => {
   Zoom.init();
   Boundary.init();
+
   // var rect = new fabric.Rect({
   //   width: 200,
   //   height: 200,

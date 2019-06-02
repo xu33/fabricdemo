@@ -1,6 +1,10 @@
 import { drawingObject } from './State';
 import { canvas } from './State';
+import { transcode } from 'buffer';
+import { domainToASCII } from 'url';
 
+var counter = 0;
+var group = null;
 var roof = null;
 var roofPoints = [];
 var lines = [];
@@ -58,6 +62,7 @@ var makeRoof = function(roofPoints) {
   var left = findLeftPaddingForRoof(roofPoints);
   var top = findTopPaddingForRoof(roofPoints);
   roofPoints.push({ x: roofPoints[0].x, y: roofPoints[0].y });
+
   var roof = new fabric.Polyline(roofPoints, {
     fill: 'rgba(0,0,0,0)',
     stroke: '#fff',
@@ -96,7 +101,26 @@ var handleDoubleClick = function(e) {
     canvas.remove(value);
   });
   roof = makeRoof(roofPoints);
-  canvas.add(roof);
+
+  var text = new fabric.Text('p' + counter++, {
+    fontSize: 24,
+    fill: '#FFF',
+    originX: 'center',
+    originY: 'center',
+    left: roof.get('left') + roof.get('width') + 12,
+    top: roof.get('top') + roof.get('height') / 2
+  });
+
+  group = new fabric.Group([], {
+    left: roof.left,
+    top: roof.top
+  });
+
+  group.addWithUpdate(roof);
+  group.addWithUpdate(text);
+
+  canvas.add(group);
+
   canvas.renderAll();
 
   Polygon.clear();
@@ -125,9 +149,75 @@ var Polygon = {
     canvas.off('mouse:up', handleMouseup);
     window.removeEventListener('dblclick', handleDoubleClick);
 
+    // 缩放变粗处理
+    // 1.缓存缩放后的矩阵
+    // 2.还原缩放系数到1
+    // 3.根据缩放后的矩阵计算新的多边形顶点坐标
+    // 4.删除旧的图形和文字（直接更新旧的图形疑似有bug）
+    // 5.添加新的图形和文字
+    group.on('scaled', function(o) {
+      var g = o.target;
+      var scaleX = g.scaleX;
+      var scaleY = g.scaleY;
+      var matrix = g.calcTransformMatrix();
+
+      // g.set('width', g.width * scaleX);
+      // g.set('height', g.height * scaleY);
+      var left = g.left;
+      var top = g.top;
+      g.set('scaleX', 1);
+      g.set('scaleY', 1);
+
+      var t = g.item(1);
+      // t.set('width', t.width * scaleX);
+      // t.set('height', t.height * scaleY);
+      // t.set('left', t.get('left') * scaleX);
+      // t.set('top', t.get('top') * scaleY);
+
+      var p = g.item(0);
+
+      var transformedPoints = p.points
+        .map(function(pt) {
+          return new fabric.Point(pt.x - p.pathOffset.x, pt.y - p.pathOffset.y);
+        })
+        .map(function(pt) {
+          return fabric.util.transformPoint(pt, matrix);
+        });
+      var nextP = new fabric.Polygon(transformedPoints, {
+        fill: 'rgba(0,0,0,0)',
+        stroke: '#fff',
+        strokeUniform: true,
+        left: p.left,
+        top: p.top
+      });
+
+      var nextT = new fabric.Text('p' + counter, {
+        fontSize: 24,
+        fill: '#FFF',
+        originX: 'center',
+        originY: 'center',
+        left: nextP.left + nextP.width + 12,
+        top: nextP.top + nextP.height / 2
+      });
+
+      g.remove(t);
+      g.remove(p);
+
+      g.addWithUpdate(nextP);
+      g.addWithUpdate(nextT);
+
+      g.set('left', left);
+      g.set('top', top);
+
+      console.log(g);
+
+      g.setCoords();
+    });
+
     // 重置
     drawingObject.type = '';
     roof = null;
+    group = null;
     roofPoints = [];
     lines = [];
     lineCounter = 0;

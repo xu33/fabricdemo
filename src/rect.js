@@ -1,50 +1,35 @@
 import { drawingObject } from './State';
 import { canvas } from './State';
 
+var counter = 1;
+var group = null;
 var rect = null;
 var drawStarted = false;
 var x = 0;
 var y = 0;
 
 var handleMousedown = function(o) {
+  canvas.on('mouse:move', handleMousemove);
+  canvas.on('mouse:up', handleMouseup);
+
   if (drawingObject.type != 'rect') {
     return;
   }
-  drawStarted = true;
+
   var mouse = canvas.getPointer(o.e);
   x = mouse.x;
   y = mouse.y;
+
   rect = new fabric.Rect({
-    width: 0,
-    height: 0,
     left: x,
     top: y,
+    width: 0,
+    height: 0,
     fill: 'rgba(0,0,0,0)',
+    stroke: '#FFF',
     strokeWidth: 1,
-    strokeUniform: true,
-    stroke: '#FFF'
+    strokeUniform: true
   });
-
-  // console.log(x, y, rect.calcTransformMatrix());
-  // console.log(canvas.viewportTransform);
-
-  var om = rect.calcTransformMatrix();
-  var cm = canvas.viewportTransform;
-  var totalMatrix = fabric.util.multiplyTransformMatrices(cm, om);
-
-  console.log(x, y);
-  // rect.setCoords();
-  console.log(
-    '叠加矩阵',
-    totalMatrix,
-    rect.left,
-    rect.top,
-    rect.getBoundingRect()
-  );
-
-  // console.log('decoded:', fabric.util.qrDecompose(om));
-
-  // fabric.util.transformPoint()
 
   canvas.add(rect);
 };
@@ -54,9 +39,7 @@ var handleMousemove = function(o) {
     return;
   }
 
-  if (!drawStarted) {
-    return false;
-  }
+  drawStarted = true;
 
   var mouse = canvas.getPointer(o.e);
 
@@ -74,8 +57,6 @@ var handleMousemove = function(o) {
   rect.set('height', h);
 
   canvas.renderAll();
-
-  // console.log(canvas.getObjects().length);
 };
 
 var handleMouseup = function() {
@@ -83,11 +64,39 @@ var handleMouseup = function() {
     return;
   }
 
-  if (drawStarted) {
-    drawStarted = false;
+  if (!drawStarted) {
+    canvas.remove(rect);
+    Rect.clear();
+    return false;
   }
 
-  Rect.clear();
+  // rect.originX = 'center';
+  // rect.originY = 'center';
+
+  rect.clone(function(cloned) {
+    group = new fabric.Group([], {
+      left: rect.left,
+      top: rect.top
+    });
+
+    var text = new fabric.Text('r' + counter++, {
+      fontSize: 24,
+      fill: '#FFF',
+      left: group.get('left') + rect.get('width') + 12,
+      top: group.get('top') + rect.get('height') / 2,
+      originX: 'center',
+      originY: 'center'
+    });
+
+    group.addWithUpdate(cloned);
+    group.addWithUpdate(text);
+
+    // 删除矩形
+    canvas.remove(rect);
+    canvas.add(group);
+
+    Rect.clear();
+  });
 };
 
 var Rect = {
@@ -98,8 +107,6 @@ var Rect = {
     drawingObject.type = 'rect';
 
     canvas.on('mouse:down', handleMousedown);
-    canvas.on('mouse:move', handleMousemove);
-    canvas.on('mouse:up', handleMouseup);
 
     this.onStart();
   },
@@ -108,13 +115,36 @@ var Rect = {
     canvas.off('mouse:move', handleMousemove);
     canvas.off('mouse:up', handleMouseup);
 
-    // 触发交互
-    // canvas.setZoom(1);
+    if (drawStarted) {
+      // 触发重绘
+      group.setCoords();
+      // 边框变粗处理
+      group.on('scaled', function(o) {
+        var g = o.target;
+        var scaleX = g.scaleX;
+        var scaleY = g.scaleY;
 
-    rect.setCoords();
+        g.set('width', g.width * scaleX);
+        g.set('height', g.height * scaleY);
+
+        g.forEachObject(t => {
+          t.set('width', t.width * scaleX);
+          t.set('height', t.height * scaleY);
+          t.set('left', t.get('left') * scaleX);
+          t.set('top', t.get('top') * scaleY);
+        });
+
+        g.set('scaleX', 1);
+        g.set('scaleY', 1);
+        g.setCoords();
+
+        console.log(g);
+      });
+    }
 
     // 重置
     rect = null;
+    group = null;
     drawingObject.type = '';
     drawStarted = false;
     x = 0;

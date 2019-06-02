@@ -2,16 +2,17 @@ const webpack = require('webpack');
 const path = require('path');
 
 const devServer = {
-  host: '192.168.6.1',
+  host: 'localhost',
   port: '7070',
   compress: true,
-  publicPath: `http://192.168.6.1:7070/assets/`
+  publicPath: `http://localhost:7070/assets/`
 };
 
 module.exports = {
   mode: 'development',
   devtool: 'inline-source-map',
   entry: {
+    test: path.resolve(__dirname, './src/test.js'),
     app: path.resolve(__dirname, './src/app.js')
   },
   resolve: {

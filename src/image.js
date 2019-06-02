@@ -12,8 +12,14 @@ var Image = {
         oImg.lockRotation = true;
 
         imgInstance = oImg;
+
         canvas.add(oImg);
 
+        var currentT = oImg.calcTransformMatrix();
+        console.log(currentT);
+        var decomposed = fabric.util.qrDecompose(currentT);
+        console.log(decomposed);
+        console.log(oImg.left, oImg.top);
         // console.log(oImg.calcOwnMatrix());
 
         res();

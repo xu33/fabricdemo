@@ -3,11 +3,8 @@ import { canvas } from './State';
 var limitImage = function(obj) {
   obj.setCoords();
 
-  var bound = obj.getBoundingRect();
   // 获取不受zoom影响的bound
-  var abound = obj.getBoundingRect(true);
-
-  // console.log(abound);
+  var bound = obj.getBoundingRect();
 
   // 计算逆矩阵
   const rmatrix = fabric.util.invertTransform(canvas.viewportTransform);
@@ -48,10 +45,8 @@ var limitShape = function(obj) {
     return;
   }
   obj.setCoords();
-
-  var bound = obj.getBoundingRect();
   // 获取不受zoom影响的bound
-  var abound = obj.getBoundingRect(true);
+  var bound = obj.getBoundingRect();
 
   // 计算逆矩阵
   const rmatrix = fabric.util.invertTransform(canvas.viewportTransform);
