@@ -115,7 +115,7 @@ var handleDoubleClick = function(e) {
     left: roof.left,
     top: roof.top
   });
-
+  group.hasRotatingPoint = false;
   group.addWithUpdate(roof);
   group.addWithUpdate(text);
 

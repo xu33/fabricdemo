@@ -78,6 +78,7 @@ var handleMouseup = function() {
       left: rect.left,
       top: rect.top
     });
+    group.hasRotatingPoint = false;
 
     var text = new fabric.Text('r' + counter++, {
       fontSize: 24,
