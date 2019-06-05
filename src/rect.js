@@ -42,7 +42,6 @@ var handleMousemove = function(o) {
   drawStarted = true;
 
   var mouse = canvas.getPointer(o.e);
-
   if (x > mouse.x) {
     rect.set({ left: Math.abs(mouse.x) });
   }
@@ -52,6 +51,13 @@ var handleMousemove = function(o) {
 
   var w = Math.abs(x - mouse.x);
   var h = Math.abs(y - mouse.y);
+
+  if (w + rect.left > canvas.width) {
+    w = canvas.width - rect.left;
+  }
+  if (h + rect.top > canvas.height) {
+    h = canvas.height - rect.top;
+  }
 
   rect.set('width', w);
   rect.set('height', h);

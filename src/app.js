@@ -58,4 +58,15 @@ Image.init().then(() => {
       canvas.remove(activeObj);
     }
   });
+
+  var enabled = false;
+  $('#together').on('click', function(e) {
+    enabled = !enabled;
+    $(this).html('是否一起动:' + enabled);
+    if (enabled) {
+      Image.enableMoveTogether();
+    } else {
+      Image.disableMoveTogether();
+    }
+  });
 });

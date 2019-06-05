@@ -1,5 +1,20 @@
 import { canvas } from './State';
 
+export var checkImageExceed = function(obj) {
+  obj.setCoords();
+  var bound = obj.getBoundingRect();
+  if (
+    bound.left > 0 ||
+    bound.top > 0 ||
+    bound.left + bound.width < canvas.width ||
+    bound.top + bound.height < canvas.height
+  ) {
+    return true;
+  }
+
+  return false;
+};
+
 var limitImage = function(obj) {
   obj.setCoords();
 
@@ -84,7 +99,7 @@ var limitShape = function(obj) {
   }
 };
 
-export const triggerLimit = function(obj) {
+export var triggerLimit = function(obj) {
   if (obj.type === 'image') {
     limitImage(obj);
   } else {
