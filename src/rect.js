@@ -9,6 +9,7 @@ var x = 0;
 var y = 0;
 
 var handleMousedown = function(o) {
+  console.log('mousedown fired');
   canvas.on('mouse:move', handleMousemove);
   canvas.on('mouse:up', handleMouseup);
 
@@ -52,15 +53,20 @@ var handleMousemove = function(o) {
   var w = Math.abs(x - mouse.x);
   var h = Math.abs(y - mouse.y);
 
-  if (w + rect.left > canvas.width) {
-    w = canvas.width - rect.left;
-  }
-  if (h + rect.top > canvas.height) {
-    h = canvas.height - rect.top;
-  }
-
   rect.set('width', w);
   rect.set('height', h);
+  rect.setCoords();
+
+  var bound = rect.getBoundingRect();
+  if (bound.width + bound.left > canvas.width - 24) {
+    w = canvas.width - bound.left - 24;
+    rect.set('width', w);
+  }
+
+  if (bound.height + bound.top > canvas.height) {
+    h = canvas.height - bound.top;
+    rect.set('height', h);
+  }
 
   canvas.renderAll();
 };
@@ -111,9 +117,11 @@ var Rect = {
     this.onStart = onStart || function() {};
     this.onEnd = onEnd || function() {};
 
-    drawingObject.type = 'rect';
+    if (drawingObject.type != 'rect') {
+      drawingObject.type = 'rect';
 
-    canvas.on('mouse:down', handleMousedown);
+      canvas.on('mouse:down', handleMousedown);
+    }
 
     this.onStart();
   },

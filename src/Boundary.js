@@ -111,15 +111,12 @@ export default {
   init() {
     // 边界判断
     canvas.on('object:moving', function(e) {
-      // console.log('object moving fired');
       var obj = e.target;
       if (obj.type === 'image') {
         limitImage(obj);
       } else {
         limitShape(obj);
       }
-
-      // console.log('vpt:', canvas.viewportTransform);
     });
   }
 };

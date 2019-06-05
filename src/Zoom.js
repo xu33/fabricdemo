@@ -1,6 +1,6 @@
 import { canvas } from './State';
 import $ from 'jquery';
-import { checkImageExceed } from './Boundary';
+import { checkImageExceed, triggerLimit } from './Boundary';
 
 var init = function() {
   var onWheel = function(opt) {
@@ -27,7 +27,12 @@ var init = function() {
     });
 
     if (checkImageExceed(imgObj)) {
-      canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, prevZoom);
+      canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, 1);
+      canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
+
+      setTimeout(function() {
+        console.log(canvas.viewportTransform);
+      }, 1000);
     }
   };
 

@@ -22,10 +22,6 @@ var mouseDownHandler = function(o) {
 
         obj.left = obj.prevLeft + deltaLeft;
         obj.top = obj.prevTop + deltaTop;
-        // obj.setCoords();
-
-        // obj.set('left', obj.left + deltaLeft);
-        // obj.set('top', obj.top + deltaTop);
         obj.setCoords();
       }
     });
