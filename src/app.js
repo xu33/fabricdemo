@@ -53,10 +53,12 @@ Image.init().then(() => {
 
   // 删除选中
   $('#del').on('click', function(e) {
-    var activeObj = canvas.getActiveObject();
-    if (activeObj.type !== 'image') {
-      canvas.remove(activeObj);
-    }
+    // var activeObj = canvas.getActiveObject();
+    // if (activeObj.type !== 'image') {
+    //   canvas.remove(activeObj);
+    // }
+
+    Image.replace('demo2.jpg');
   });
 
   var enabled = false;

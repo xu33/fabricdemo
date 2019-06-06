@@ -69,6 +69,17 @@ var Image = {
   },
   disableMoveTogether() {
     canvas.off('mouse:down', mouseDownHandler);
+  },
+  replace(url) {
+    // console.log('replace fired');
+    // // imgInstance._element.src = url;
+    imgInstance.setSrc(
+      url,
+      function() {
+        canvas.renderAll();
+      },
+      {}
+    );
   }
 };
 
