@@ -102,6 +102,8 @@ var handleMousedown = function(o) {
   circle = new fabric.Circle({
     left: x,
     top: y,
+    fill: '#fff',
+    stroke: '#000',
     originX: 'center',
     originY: 'center',
     radius: 0
@@ -253,4 +255,39 @@ var gCircle = {
   }
 };
 
+// fabric.Image.fromURL('demo.jpg', function(oImg) {
+//   // 禁止控件缩放图片
+//   oImg.lockScalingX = true;
+//   oImg.lockScalingY = true;
+//   oImg.lockUniScaling = true;
+//   oImg.lockRotation = true;
+//   oImg.hasRotatingPoint = false;
+//   oImg.lockMovementX = true;
+//   oImg.lockMovementY = true;
+//   oImg.width = 600;
+//   oImg.height = 600;
+
+//   canvas.add(oImg);
+//   setTimeout(() => {
+
+//   }, 500);
+// });
+
 gCircle.init({});
+
+document.body.addEventListener('dblclick', function(e) {
+  canvas.setDimensions({ width: 1000, height: 1000 });
+  // var scaleX = 600 / 400;
+  // var scaleY = 600 / 400;
+  // console.log(canvas.viewportTransform);
+  // canvas.viewportTransform = [scaleX, 0, 0, scaleY, 0, 0];
+  // canvas.renderAll();
+
+  var z = 1000 / 400;
+
+  canvas.setZoom(z);
+
+  var cacheMatrix = canvas.viewportTransform;
+
+  canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
+});
