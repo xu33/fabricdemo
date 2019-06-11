@@ -1,4 +1,4 @@
-var canvas = new fabric.Canvas('c');
+var canvas = new fabric.Canvas("c");
 
 // var polygon = new fabric.Polygon(
 //   [
@@ -84,14 +84,14 @@ var circle = null;
 var drawStarted = false;
 var x = 0;
 var y = 0;
-var drawingObject = { type: 'circle' };
+var drawingObject = { type: "circle" };
 
 var handleMousedown = function(o) {
-  canvas.on('mouse:move', handleMousemove);
-  canvas.on('mouse:up', handleMouseup);
+  canvas.on("mouse:move", handleMousemove);
+  canvas.on("mouse:up", handleMouseup);
   // canvas.on('mouse:out', handleMouseup);
 
-  if (drawingObject.type != 'circle') {
+  if (drawingObject.type != "circle") {
     return;
   }
 
@@ -102,10 +102,10 @@ var handleMousedown = function(o) {
   circle = new fabric.Circle({
     left: x,
     top: y,
-    fill: '#fff',
-    stroke: '#000',
-    originX: 'center',
-    originY: 'center',
+    fill: "#fff",
+    stroke: "#000",
+    originX: "center",
+    originY: "center",
     radius: 0
   });
 
@@ -115,7 +115,7 @@ var handleMousedown = function(o) {
 };
 
 var handleMousemove = function(o) {
-  if (drawingObject.type != 'circle') {
+  if (drawingObject.type != "circle") {
     return;
   }
 
@@ -130,26 +130,25 @@ var handleMousemove = function(o) {
   var top = circle.top;
   var left = circle.left;
   if (radius > top || radius > left) {
-    console.log('top exceed');
+    console.log("top exceed");
     var r = Math.min(radius, top, left);
-    circle.set('radius', r);
+    circle.set("radius", r);
   } else if (left + radius > canvas.width || top + radius > canvas.height) {
-    console.log('bottom exceed');
+    console.log("bottom exceed");
     var r = Math.min(radius, canvas.width - left, canvas.height - top);
-    circle.set('radius', r);
+    circle.set("radius", r);
   }
 
   canvas.renderAll();
 };
 
 var handleMouseup = function() {
-  if (drawingObject.type != 'circle') {
+  if (drawingObject.type != "circle") {
     return;
   }
 
   if (!drawStarted) {
     canvas.remove(circle);
-    gCircle.clear();
     return false;
   }
 
@@ -160,17 +159,17 @@ var handleMouseup = function() {
     });
     group.hasRotatingPoint = false;
 
-    console.log(group.get('left'));
-    console.log(group.get('top'));
-    console.log(circle.get('radius'));
+    console.log(group.get("left"));
+    console.log(group.get("top"));
+    console.log(circle.get("radius"));
 
-    var text = new fabric.Text('C' + counter++, {
+    var text = new fabric.Text("C" + counter++, {
       fontSize: 16,
-      fill: '#FFF',
-      left: group.get('left') + circle.get('radius'),
-      top: group.get('top'),
-      originX: 'right',
-      originY: 'center'
+      fill: "#FFF",
+      left: group.get("left") + circle.get("radius"),
+      top: group.get("top"),
+      originX: "right",
+      originY: "center"
     });
 
     group.addWithUpdate(cloned);
@@ -179,81 +178,19 @@ var handleMouseup = function() {
     // 删除矩形
     canvas.remove(circle);
     canvas.add(group);
-    gCircle.clear();
-  });
-};
 
-var gCircle = {
-  init: function({ onStart, onEnd, onScaled, onMoved }) {
-    console.log('init fired');
-    this.onStart = onStart || function() {};
-    this.onEnd = onEnd || function(o) {};
-    this.onScaled = onScaled || function(o) {};
-    this.onMoved = onMoved || function(o) {};
-
-    drawingObject.type = 'circle';
-    canvas.on('mouse:down', handleMousedown);
-    this.onStart();
-  },
-  blur: function() {
-    canvas.off('mouse:down', handleMousedown);
-  },
-  clear: function() {
-    canvas.off('mouse:down', handleMousedown);
-    canvas.off('mouse:move', handleMousemove);
-    canvas.off('mouse:up', handleMouseup);
-
-    if (drawStarted) {
-      // 触发重绘
-      group.setCoords();
-      // 边框变粗处理
-      group.on('scaled', o => {
-        var g = o.target;
-        var scaleX = g.scaleX;
-        var scaleY = g.scaleY;
-
-        // g.set('width', g.width * scaleX);
-        // g.set('height', g.height * scaleY);
-
-        g.forEachObject(t => {
-          // t.set('width', t.width * scaleX);
-          // t.set('height', t.height * scaleY);
-          t.set('left', t.get('left') * scaleX);
-          t.set('top', t.get('top') * scaleY);
-        });
-
-        g.set('scaleX', 1);
-        g.set('scaleY', 1);
-        g.setCoords();
-
-        // console.log(g);
-        this.onScaled(g);
-      });
-
-      group.on('moved', o => {
-        this.onMoved(o.target);
-      });
-    }
-
+    // reset
     // 重置
     circle = null;
-    drawingObject.type = '';
+    drawingObject.type = "";
     drawStarted = false;
     x = 0;
     y = 0;
-    this.onEnd(group);
     group = null;
-  },
-  setCounter(value = 0) {
-    counter = value;
-  },
-  getCounter() {
-    return counter;
-  },
-  getGroup() {
-    return group;
-  }
+  });
 };
+
+canvas.on("mouse:down", handleMousedown);
 
 // fabric.Image.fromURL('demo.jpg', function(oImg) {
 //   // 禁止控件缩放图片
@@ -273,21 +210,58 @@ var gCircle = {
 //   }, 500);
 // });
 
-gCircle.init({});
+const small = 400;
+const big = 700;
+var bool = true;
+document.body.addEventListener("dblclick", function(e) {
+  var z;
+  if (bool) {
+    canvas.setDimensions({ width: big, height: big });
 
-document.body.addEventListener('dblclick', function(e) {
-  canvas.setDimensions({ width: 1000, height: 1000 });
-  // var scaleX = 600 / 400;
-  // var scaleY = 600 / 400;
-  // console.log(canvas.viewportTransform);
-  // canvas.viewportTransform = [scaleX, 0, 0, scaleY, 0, 0];
-  // canvas.renderAll();
+    z = big / small;
+  } else {
+    canvas.setDimensions({ width: small, height: small });
 
-  var z = 1000 / 400;
+    z = small / big;
+  }
 
   canvas.setZoom(z);
 
   var cacheMatrix = canvas.viewportTransform;
 
   canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
+
+  var g = canvas.item(0);
+  var circle = g.item(0);
+  var oldR = circle.get("radius");
+  var oldLeft = g.get("left");
+  var oldTop = g.get("top");
+  var oh = g.get("height");
+  var ow = g.get("width");
+  var options = fabric.util.qrDecompose(cacheMatrix);
+
+  console.log(options, oldTop, oldLeft);
+
+  var newR = oldR * options.scaleX;
+  var newLeft = oldLeft * options.scaleX + options.translateX;
+  var newTop = oldTop * options.scaleY + options.translateY;
+  var newWidth = ow * options.scaleX;
+  var newHeight = oh * options.scaleY;
+
+  console.log(newR, newLeft, newTop);
+
+  g.set("left", newLeft);
+  g.set("top", newTop);
+  g.set("width", newWidth);
+  g.set("height", newHeight);
+
+  circle.set({
+    radius: newR
+  });
+
+  g.setCoords();
+
+  canvas.renderAll();
+
+  bool = !bool;
 });
