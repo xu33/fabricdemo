@@ -1,6 +1,7 @@
 import { drawingObject } from './State';
 import { canvas } from './State';
 
+var MAXIMUM_POINTS = 6;
 var counter = 0;
 var group = null;
 var roof = null;
@@ -9,14 +10,24 @@ var lines = [];
 var lineCounter = 0;
 var x = 0;
 var y = 0;
+var isMoveAfterLastClick = false;
 
 var handleMousedown = function(options) {
   if (drawingObject.type == 'roof') {
+    console.log('isMoveAfterLastClick:', isMoveAfterLastClick);
+    if (roofPoints.length > 0) {
+      if (!isMoveAfterLastClick) {
+        return;
+      }
+    }
+
+    isMoveAfterLastClick = false;
     canvas.selection = false;
 
     setStartingPoint(options);
 
     roofPoints.push({ x, y });
+
     var points = [x, y, x, y];
     lines.push(
       new fabric.Line(points, {
@@ -28,6 +39,10 @@ var handleMousedown = function(options) {
     );
     canvas.add(lines[lineCounter]);
     lineCounter++;
+
+    if (roofPoints.length == MAXIMUM_POINTS) {
+      finishDraw();
+    }
   }
 };
 
@@ -44,10 +59,13 @@ var handleMousemove = function(options) {
     });
     canvas.renderAll();
   }
+
+  isMoveAfterLastClick = true;
 };
 
 var handleMouseup = function() {
   canvas.selection = true;
+  isMoveAfterLastClick = false;
 };
 
 var setStartingPoint = function(o) {
@@ -94,7 +112,7 @@ var findLeftPaddingForRoof = function(roofPoints) {
   return Math.abs(result);
 };
 
-var handleDoubleClick = function(e) {
+var finishDraw = () => {
   lines.forEach(function(value, index, ar) {
     canvas.remove(value);
   });
@@ -122,6 +140,10 @@ var handleDoubleClick = function(e) {
   canvas.renderAll();
 
   Polygon.clear();
+};
+
+var handleDoubleClick = function(e) {
+  finishDraw();
 };
 
 var noop = function() {};
