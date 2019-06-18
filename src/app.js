@@ -5,6 +5,7 @@ import Rect from './Rect';
 import Image from './Image';
 import Zoom from './Zoom';
 import Boundary from './Boundary';
+import './a.css';
 
 Image.init().then(() => {
   Zoom.init();

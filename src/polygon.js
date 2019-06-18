@@ -1,5 +1,5 @@
 import { drawingObject } from './State';
-import { canvas } from './State';
+import { canvas, work } from './State';
 
 var MAXIMUM_POINTS = 6;
 var counter = 0;
@@ -14,11 +14,16 @@ var isMoveAfterLastClick = false;
 
 var handleMousedown = function(options) {
   if (drawingObject.type == 'roof') {
-    console.log('isMoveAfterLastClick:', isMoveAfterLastClick);
     if (roofPoints.length > 0) {
       if (!isMoveAfterLastClick) {
         return;
       }
+    } else {
+      if (work.length > 0) {
+        alert('aaa');
+        return;
+      }
+      work.push({});
     }
 
     isMoveAfterLastClick = false;
@@ -164,6 +169,8 @@ var Polygon = {
     this.onStart();
   },
   clear: function() {
+    work.pop();
+
     canvas.off('mouse:down', handleMousedown);
     canvas.off('mouse:move', handleMousemove);
     canvas.off('mouse:up', handleMouseup);

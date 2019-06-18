@@ -57,6 +57,32 @@ var limitImage = function(obj) {
 
 var limitShape = function(obj) {
   if (canvas.getZoom() > 1) {
+    obj.setCoords();
+    var scale = canvas.getZoom();
+    var bound = obj.getBoundingRect();
+    console.log(bound);
+    if (bound.left < 0) {
+      console.log('left exceed');
+
+      obj.left = 0;
+    }
+
+    if (bound.top < 0) {
+      console.log('top exceed');
+
+      obj.top = 0;
+    }
+
+    if (bound.left + bound.width > canvas.width * scale) {
+      console.log('right exceed');
+      // console.log(obj.aCoords);
+      obj.left = canvas.width * scale - bound.width;
+    }
+
+    if (bound.top + bound.height > canvas.height * scale) {
+      console.log('bottom exceed');
+      obj.top = canvas.height * scale - bound.height;
+    }
     return;
   }
   obj.setCoords();
