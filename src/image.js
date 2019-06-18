@@ -1,4 +1,4 @@
-import { canvas } from './State';
+import { canvas } from "./State";
 
 var imgInstance = null;
 var mouseDownHandler = function(o) {
@@ -9,7 +9,7 @@ var mouseDownHandler = function(o) {
   var imgTop = o.target.top;
   var oImg = o.target;
 
-  oImg.on('moving', function(o) {
+  oImg.on("moving", function(o) {
     var deltaLeft = o.target.left - imgLeft;
     var deltaTop = o.target.top - imgTop;
 
@@ -27,28 +27,33 @@ var mouseDownHandler = function(o) {
     });
   });
 
-  canvas.on('mouse:up', function(o) {
+  canvas.on("mouse:up", function(o) {
     canvas.forEachObject(function(obj) {
       delete obj.prevLeft;
       delete obj.prevTop;
     });
-    oImg.off('moving');
+    oImg.off("moving");
   });
 };
 
 var Image = {
+  ready: false,
   init() {
-    return new Promise(res => {
-      fabric.Image.fromURL('demo.jpg', function(oImg) {
+    return new Promise(function(res) {
+      fabric.Image.fromURL("demo.png", function(oImg) {
         // 禁止控件缩放图片
         oImg.lockScalingX = true;
         oImg.lockScalingY = true;
         oImg.lockUniScaling = true;
         oImg.lockRotation = true;
         oImg.hasRotatingPoint = false;
-        imgInstance = oImg;
+        Image.ready = true;
 
         canvas.add(oImg);
+        canvas.oImg = oImg;
+
+        imgInstance = oImg;
+        console.log("imgInstance:", imgInstance);
         res();
       });
     });
@@ -62,17 +67,16 @@ var Image = {
     imgInstance.lockMovementY = false;
   },
   getInstance() {
+    console.log("imginst", imgInstance);
     return imgInstance;
   },
   enableMoveTogether() {
-    canvas.on('mouse:down', mouseDownHandler);
+    canvas.on("mouse:down", mouseDownHandler);
   },
   disableMoveTogether() {
-    canvas.off('mouse:down', mouseDownHandler);
+    canvas.off("mouse:down", mouseDownHandler);
   },
   replace(url) {
-    // console.log('replace fired');
-    // // imgInstance._element.src = url;
     imgInstance.setSrc(
       url,
       function() {

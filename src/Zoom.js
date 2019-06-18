@@ -1,6 +1,6 @@
-import { canvas } from './State';
-import $ from 'jquery';
-import { checkImageExceed, triggerLimit } from './Boundary';
+import { canvas } from "./State";
+import $ from "jquery";
+import { checkImageExceed, triggerLimit } from "./Boundary";
 
 var init = function() {
   var onWheel = function(opt) {
@@ -21,7 +21,7 @@ var init = function() {
 
     var imgObj;
     canvas.forEachObject(function(obj) {
-      if (obj.type === 'image') {
+      if (obj.type === "image") {
         imgObj = obj;
       }
     });
@@ -33,13 +33,13 @@ var init = function() {
     }
   };
 
-  canvas.on('mouse:wheel', onWheel);
+  canvas.on("mouse:wheel", onWheel);
 
   var zoomEnable = false;
-  $('#zoominout').on('click', function(e) {
+  $("#zoominout").on("click", function(e) {
     zoomEnable = !zoomEnable;
 
-    $('#zoominout').html(zoomEnable ? '取消' : '缩放');
+    $("#zoominout").html(zoomEnable ? "取消" : "缩放");
   });
 };
 
